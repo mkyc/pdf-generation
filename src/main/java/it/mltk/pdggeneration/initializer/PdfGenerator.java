@@ -1,7 +1,9 @@
 package it.mltk.pdggeneration.initializer;
 
 import com.lowagie.text.DocumentException;
+import it.mltk.pdggeneration.service.ReportCreationService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
@@ -17,6 +19,10 @@ import java.io.*;
 @Slf4j
 @Component
 public class PdfGenerator implements ApplicationRunner {
+
+    @Autowired
+    ReportCreationService reportCreationService;
+
     @Override
     public void run(ApplicationArguments applicationArguments) throws IOException, DocumentException {
         ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
@@ -31,10 +37,10 @@ public class PdfGenerator implements ApplicationRunner {
         templateEngine.setTemplateResolver(templateResolver);
 
         final Context ctx = new Context();
-        ctx.setVariable("name", "World");
+        ctx.setVariable("report", reportCreationService.createReport());
 
         StringWriter stringWriter = new StringWriter();
-        templateEngine.process("test1", ctx, stringWriter);
+        templateEngine.process("report", ctx, stringWriter);
 
         String html = stringWriter.toString();
 
